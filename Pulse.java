@@ -1,15 +1,19 @@
-package pulse3;
+package pulse4;
 import java.awt.Font;
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 import java.awt.Container;
 import java.awt.BorderLayout;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
+import java.io.*;
+import gnu.io.*;
 
-public class Pulse3 {
+
+public class Pulse4 {
 	static int spulse;
-public static void main(String[] args) throws InterruptedException {
+public static void main(String[] args) throws InterruptedException, PortInUseException, NoSuchPortException, UnsupportedCommOperationException, IOException {
 
 	
 	// TODO 自動生成されたメソッド・スタブ
@@ -52,16 +56,25 @@ public static void main(String[] args) throws InterruptedException {
 	frame.setVisible(false);
 	TimeUnit.SECONDS.sleep(1);
 	/////loop/////
+	CommPortIdentifier portID = CommPortIdentifier.getPortIdentifier( "COM5" );
+	   SerialPort port = (SerialPort)portID.open("Sample", 5000); 
+	   port.setSerialPortParams(9600, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
+	   port.setFlowControlMode(SerialPort.FLOWCONTROL_NONE);
+	   InputStream is = port.getInputStream();
+	    
+	   float c;
+	   System.out.println("start reading");
 	while(true) {
-		SubPulse sub=new SubPulse();
-		spulse=0;
-		spulse=sub.subcount();
-		String str = String.valueOf(sub.subcount());
+        c = is.read();
+		if(c>-1) {
+		c=(1/c)*25;
+		c=60/c;
+        System.out.println(c);
+		String str = String.valueOf(c);
 		Changelabel.setText(str+"[bpm]");
 		conPane.add(Changelabel,BorderLayout.SOUTH);
 		frame.setVisible(true);
-		TimeUnit.SECONDS.sleep(1);
-    }
-
-}
+		}
+	}
+	}
 }
